@@ -2,7 +2,7 @@ import plotly.graph_objects as go
 
 import pandas as pd
 
-df = pd.read_csv('~/Projects/visulization/us_state_lonlat.csv')
+df = pd.read_csv('./us_state_lonlat.csv')
 df.head()
 
 df['text'] = df['name'] #+ '<br>Population ' + (df['pop']/1e6).astype(str)+' million'
@@ -16,6 +16,7 @@ fig = go.Figure()
 for i in range(len(limits)):
     lim = limits[i]
     df_sub = df[lim[0]:lim[1]]
+    print df_sub['text']
     fig.add_trace(go.Scattergeo(
         locationmode = 'USA-states',
         lon = df_sub['lon'],
