@@ -5,22 +5,31 @@ import pandas as pd
 import sys
 
 data_source=sys.argv[1]
+#if (sys.argv[2]):
+#    start_date = sys.argv[2]
 
 df = pd.read_csv('./us_state_lonlat.csv')
 df_data = pd.read_csv(data_source)
 df.head()
 
-df['text'] = df['name'] #+ '<br>Population ' + (df['pop']/1e6).astype(str)+' million'
+df['text'] = df['name'] # + df['data'].astype(str) #+ '<br>Population ' + (df['pop']/1e6).astype(str)+' million'
+
+# Let's combine the data source into the  geolocation source
+# https://github.com/nytimes/covid-19-data/blob/master/us-states.csv
+df = df.set_index('name')
+df_data =df_data.set_index('name')
+df['data']=df_data['data']
+
+
+
 #limits = [(0,2),(3,10),(11,20),(21,50),(50,3000)]
 limits = [(0,3000)]
 colors = ["royalblue","crimson","lightseagreen","orange","lightgrey"]
 cities = []
 scale = 10
 
-# Let's combine the data source into the  geolocation source
-df = df.set_index('name')
-df_data =df_data.set_index('name')
-df['data']=df_data  ['data']
+
+df['text']=df['text']+'\n'+df['data'].astype(str)
 
 fig = go.Figure()
 
