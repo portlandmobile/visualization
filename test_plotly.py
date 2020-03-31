@@ -4,9 +4,11 @@ import plotly.graph_objects as go
 import pandas as pd
 import sys
 
+#where is the data source file. Contains 'name' and 'data'
 data_source=sys.argv[1]
-#if (sys.argv[2]):
-#    start_date = sys.argv[2]
+#Getting the start date like 2020-03-28
+if len(sys.argv) > 2:
+    start_date = sys.argv[2]
 
 df = pd.read_csv('./us_state_lonlat.csv')
 df_data = pd.read_csv(data_source)
@@ -14,13 +16,16 @@ df.head()
 
 df['text'] = df['name'] # + df['data'].astype(str) #+ '<br>Population ' + (df['pop']/1e6).astype(str)+' million'
 
+#Mask the entry based on the date that we want to see
+df_data['date'] = pd.to_datetime(df_data['date']) 
+mask=(df_data['date'] == start_date)
+df_data = df_data.loc[mask]
+
 # Let's combine the data source into the  geolocation source
 # https://github.com/nytimes/covid-19-data/blob/master/us-states.csv
 df = df.set_index('name')
 df_data =df_data.set_index('name')
 df['data']=df_data['data']
-
-
 
 #limits = [(0,2),(3,10),(11,20),(21,50),(50,3000)]
 limits = [(0,3000)]
