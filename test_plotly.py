@@ -28,6 +28,7 @@ df_data = df_data.loc[mask]
 df = df.set_index('name')
 df_data =df_data.set_index('state')
 df['data']=df_data['cases']
+df=df.fillna(axis=1, value='0')
 
 #limits = [(0,2),(3,10),(11,20),(21,50),(50,3000)]
 limits = [(0,3000)]
