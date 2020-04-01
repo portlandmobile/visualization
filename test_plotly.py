@@ -1,4 +1,6 @@
 #Reference from: https://plotly.com/python/bubble-maps/
+#Command to run this:
+# python test_plotly.py https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv 2020-03-29
 
 import plotly.graph_objects as go
 import pandas as pd
@@ -24,8 +26,8 @@ df_data = df_data.loc[mask]
 # Let's combine the data source into the  geolocation source
 # https://github.com/nytimes/covid-19-data/blob/master/us-states.csv
 df = df.set_index('name')
-df_data =df_data.set_index('name')
-df['data']=df_data['data']
+df_data =df_data.set_index('state')
+df['data']=df_data['cases']
 
 #limits = [(0,2),(3,10),(11,20),(21,50),(50,3000)]
 limits = [(0,3000)]
