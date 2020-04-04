@@ -1,6 +1,8 @@
 #Reference from: https://plotly.com/python/bubble-maps/
 #Command to run this:
 # python test_plotly.py https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv 2020-03-29
+# Reference:  More Plotly docs is here  https://plotly.com/~notebook_demo/254/interact-here-is-a-simple-example-of-usi/#/
+
 
 import plotly.graph_objects as go
 import pandas as pd
@@ -19,8 +21,8 @@ df.head()
 df['text'] = df['name'] # + df['data'].astype(str) #+ '<br>Population ' + (df['pop']/1e6).astype(str)+' million'
 
 #Mask the entry based on the date that we want to see
-df_data['date'] = pd.date_range(end=start_date, periods=5) 
-mask=(df_data['date'] > '2020-03-27' & df_data['date'] < start_date)
+df_data['date'] = pd.to_datetime(df_data['date']) 
+mask=(df_data['date'] == start_date)
 df_data = df_data.loc[mask]
 
 # Let's combine the data source into the  geolocation source
@@ -45,7 +47,7 @@ for i in range(len(limits)):
     lim = limits[i]
     # Breaking the list which is based in the order by population. 
     df_sub = df[lim[0]:lim[1]]
-    fig.add_trace(go.Scattergeo(
+    orig_trace= fig.add_trace(go.Scattergeo(
         locationmode = 'USA-states',
         lon = df_sub['lon'],
         lat = df_sub['lat'],
@@ -58,6 +60,30 @@ for i in range(len(limits)):
             sizemode = 'area'
         ),
         name = '{0} - {1}'.format(lim[0],lim[1])))
+
+
+# Test to see how to add another trace and potentially use batch_animate()
+# Just copy from the same as above and make a small change
+fig.update_traces(
+         marker = dict (size=df_sub['data'].astype(int)/100)
+    )
+# for i in range(len(limits)):
+#     lim = limits[i]
+#     # Breaking the list which is based in the order by population. 
+#     df_sub = df[lim[0]:lim[1]]
+    # fig.add_trace(go.Scattergeo(
+    #     locationmode = 'USA-states',
+    #     lon = df_sub['lon'],
+    #     lat = df_sub['lat'],
+    #     text = df_sub['text'],
+    #     marker = dict(
+    #         size = df_sub['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
+    #         color = colors[i],
+    #         line_color='rgb(40,40,40)',
+    #         line_width=0.5,
+    #         sizemode = 'area'
+    #     ),
+    #     name = '{0} - {1}'.format(lim[0],lim[1])))
 
 fig.update_layout(
         title_text = 'US States Blah Blah<br>(Click legend to toggle traces)',
