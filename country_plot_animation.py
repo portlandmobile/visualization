@@ -82,11 +82,6 @@ fig_dict["layout"]["updatemenus"] = [
     }
 ]
 
-
-
-figAnim = go.Figure(fig_dict)
-# figAnim.show()
-
 #######
 # # https://medium.com/swlh/interactive-animated-travel-data-visualizations-mapping-nba-travel-a154a2e7c18d
 #######
@@ -105,6 +100,10 @@ data_dict= {
         }
 frame["data"].append(data_dict)
 fig_dict["frames"].append(frame)
+
+
+figAnim = go.Figure(fig_dict)
+# figAnim.show()
 
 ######
 # End
