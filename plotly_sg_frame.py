@@ -19,6 +19,7 @@ df['text'] = df['name'] # + df['data'].astype(str) #+ '<br>Population ' + (df['p
 df_data['date'] = pd.to_datetime(df_data['date']) 
 mask=(df_data['date'] == start_date)
 df_data = df_data.loc[mask]
+print df_data
 
 # Let's combine the data source into the  geolocation source
 # https://github.com/nytimes/covid-19-data/blob/master/us-states.csv
