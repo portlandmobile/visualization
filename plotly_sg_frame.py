@@ -15,11 +15,20 @@ df.head()
 
 df['text'] = df['name'] # + df['data'].astype(str) #+ '<br>Population ' + (df['pop']/1e6).astype(str)+' million'
 
+frame_data={}
 #Mask the entry based on the date that we want to see
 df_data['date'] = pd.to_datetime(df_data['date']) 
 mask=(df_data['date'] == start_date)
 df_data = df_data.loc[mask]
-print df_data
+frame_data[0]=df_data
+
+'''
+df_data = pd.read_csv(data_source)
+mask=(df_data['date'] == pd.to_datetime(start_date+1))
+df_data = df_data.loc[mask]
+frame_data[1]=df_data
+print frame_data
+'''
 
 # Let's combine the data source into the  geolocation source
 # https://github.com/nytimes/covid-19-data/blob/master/us-states.csv
