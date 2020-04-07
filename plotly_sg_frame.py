@@ -57,7 +57,12 @@ fig_dict = dict(
         geo = dict(
             scope = 'usa',
             landcolor = 'rgb(217, 217, 217)',
-        )
+        ),
+        updatemenus=[dict(
+            type="buttons",
+            buttons=[dict(label="Play",
+                          method="animate",
+                          args=[None])])]
     ),
 
     data = [
@@ -95,11 +100,26 @@ fig_dict = dict(
                 'line_width': 0.5,
                 'sizemode' : 'area'
             }
-
             }
           ],
+        },
+        {'name' : '1', 'layout' : {},
+         'data': [
+             {'type': 'scattergeo', 
+              'locationmode' : 'USA-states',
+              'lon' : df_sub['lon'],
+              'lat' : df_sub['lat'],
+              'text' : df_sub['text'],
+              'marker' : {
+                'size' : df_sub['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
+                'color' : colors[i],
+                'line_color' : 'rgb(40,40,40)',
+                'line_width': 1.5,
+                'sizemode' : 'area'
+            }
+            }
+            ]
         }
-
     ]
 )
 
