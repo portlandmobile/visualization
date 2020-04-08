@@ -15,20 +15,38 @@ df.head()
 
 df['text'] = df['name'] # + df['data'].astype(str) #+ '<br>Population ' + (df['pop']/1e6).astype(str)+' million'
 
-frame_data={}
+#frame_data={}
 #Mask the entry based on the date that we want to see
+state_df=df
+df_data['date'] = pd.to_datetime(df_data['date']) 
+frame_data0=df_data[df_data['date']==start_date]
+state_df = state_df.set_index('name')
+frame_data0 =frame_data0.set_index('state')
+state_df['data']=frame_data0['cases']
+state_df=state_df.fillna(axis=1, value='0')
+
+
+state_df1=df
+df_data['date'] = pd.to_datetime(df_data['date']) 
+frame_data0=df_data[df_data['date']=='2020-03-20']
+state_df1 = state_df1.set_index('name')
+frame_data0 =frame_data0.set_index('state')
+state_df1['data']=frame_data0['cases']
+state_df1=state_df1.fillna(axis=1, value='0')
+
+#frame_data[1]=df_data
+
+print state_df, state_df1
+
+
+mask=(df_data['date'] == start_date)
+df_data = df_data.loc[mask]
+
+
 df_data['date'] = pd.to_datetime(df_data['date']) 
 mask=(df_data['date'] == start_date)
 df_data = df_data.loc[mask]
-frame_data[0]=df_data
 
-'''
-df_data = pd.read_csv(data_source)
-mask=(df_data['date'] == pd.to_datetime(start_date+1))
-df_data = df_data.loc[mask]
-frame_data[1]=df_data
-print frame_data
-'''
 
 # Let's combine the data source into the  geolocation source
 # https://github.com/nytimes/covid-19-data/blob/master/us-states.csv
@@ -104,7 +122,7 @@ fig_dict = dict(
               'lat' : df_sub['lat'],
               'text' : df_sub['text'],
               'marker' : {
-                'size' : df_sub['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
+                'size' : state_df1['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
                 'color' : colors[i],
                 'line_color' : 'rgb(40,40,40)',
                 'line_width': 0.5,
@@ -121,10 +139,10 @@ fig_dict = dict(
               'lat' : df_sub['lat'],
               'text' : df_sub['text'],
               'marker' : {
-                'size' : df_sub['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
+                'size' : state_df['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
                 'color' : colors[i],
                 'line_color' : 'rgb(40,40,40)',
-                'line_width': 1.5,
+                'line_width': 0.5,
                 'sizemode' : 'area'
             }
             }
