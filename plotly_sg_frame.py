@@ -1,16 +1,16 @@
 
 import plotly.graph_objects as go
 import pandas as pd
-import sys, time
+import sys, datetime
 
 #where is the data source file. Contains 'name' and 'data'
-data_source=sys.argv[1]
+data_source_file=sys.argv[1]
 #Getting the start date like 2020-03-28
 if len(sys.argv) > 2:
     start_date = sys.argv[2]
 
 df = pd.read_csv('./us_state_lonlat.csv')
-df_data = pd.read_csv(data_source)
+df_data = pd.read_csv(data_source_file)
 df.head()
 
 df['text'] = df['name'] # + df['data'].astype(str) #+ '<br>Population ' + (df['pop']/1e6).astype(str)+' million'
@@ -18,25 +18,25 @@ df['text'] = df['name'] # + df['data'].astype(str) #+ '<br>Population ' + (df['p
 #frame_data={}
 #Mask the entry based on the date that we want to see
 state_df=df
-df_data['date'] = pd.to_datetime(df_data['date']) 
+'''df_data['date'] = pd.to_datetime(df_data['date']) 
 frame_data0=df_data[df_data['date']==start_date]
 state_df = state_df.set_index('name')
 frame_data0 =frame_data0.set_index('state')
 state_df['data']=frame_data0['cases']
 state_df=state_df.fillna(axis=1, value='0')
+'''
 
-
-state_df1=df
+'''state_df1=df
 df_data['date'] = pd.to_datetime(df_data['date']) 
 frame_data0=df_data[df_data['date']=='2020-03-20']
 state_df1 = state_df1.set_index('name')
 frame_data0 =frame_data0.set_index('state')
 state_df1['data']=frame_data0['cases']
 state_df1=state_df1.fillna(axis=1, value='0')
-
 #frame_data[1]=df_data
+'''
 
-print state_df, state_df1
+#print state_df, state_df1
 
 
 mask=(df_data['date'] == start_date)
@@ -114,7 +114,60 @@ fig_dict = dict(
     ],
 
     frames = [
-        {'name' : '0', 'layout' : {},
+        # {'name' : '0', 'layout' : {},
+        #  'data': [
+        #      {'type': 'scattergeo', 
+        #       'locationmode' : 'USA-states',
+        #       'lon' : df_sub['lon'],
+        #       'lat' : df_sub['lat'],
+        #       'text' : df_sub['text'],
+        #       'marker' : {
+        #         'size' : state_df1['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
+        #         'color' : colors[i],
+        #         'line_color' : 'rgb(40,40,40)',
+        #         'line_width': 0.5,
+        #         'sizemode' : 'area'
+        #     }
+        #     }
+        #   ],
+        # }
+    ]
+)
+
+df_data = pd.read_csv(data_source_file)
+state_df = state_df.set_index('name')
+#frame_data0 =frame_data0.set_index('state')
+df_data['date'] = pd.to_datetime(df_data['date']) 
+#df=df.set_index('name')
+
+data_source = pd.read_csv(data_source_file)
+
+count=0
+for i in pd.date_range(start_date, '2020-04-8', freq='1D'):
+    count=count+1    
+#     mask=(df_data['date'] == i)
+#     temp_data = df_data.loc[mask]
+
+
+# #    frame_data0=df_data[temp_data['date']==i]
+# #    print frame_data0['cases']
+#     state_df['data']=temp_data['cases']
+#     state_df=state_df.fillna(axis=1, value='0')
+#     print state_df
+
+    df_data2=data_source
+    df_data2=df_data2.set_index('state')
+
+    df_data2['date'] = pd.to_datetime(df_data2['date']) 
+    mask=(df_data2['date'] == i)
+    df_data2 = df_data2.loc[mask]
+    # Let's combine the data source into the  geolocation source
+    # https://github.com/nytimes/covid-19-data/blob/master/us-states.csv
+    df['data']=df_data2['cases']
+    df=df.fillna(axis=1, value='0')
+
+
+    appendFrame={'name' : count, 'layout' : {},
          'data': [
              {'type': 'scattergeo', 
               'locationmode' : 'USA-states',
@@ -122,25 +175,8 @@ fig_dict = dict(
               'lat' : df_sub['lat'],
               'text' : df_sub['text'],
               'marker' : {
-                'size' : state_df1['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
-                'color' : colors[i],
-                'line_color' : 'rgb(40,40,40)',
-                'line_width': 0.5,
-                'sizemode' : 'area'
-            }
-            }
-          ],
-        },
-        {'name' : '1', 'layout' : {},
-         'data': [
-             {'type': 'scattergeo', 
-              'locationmode' : 'USA-states',
-              'lon' : df_sub['lon'],
-              'lat' : df_sub['lat'],
-              'text' : df_sub['text'],
-              'marker' : {
-                'size' : state_df['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
-                'color' : colors[i],
+                'size' : df['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
+                'color' : colors[0],
                 'line_color' : 'rgb(40,40,40)',
                 'line_width': 0.5,
                 'sizemode' : 'area'
@@ -148,11 +184,10 @@ fig_dict = dict(
             }
             ]
         }
-    ]
-)
+
+    fig_dict["frames"].append(appendFrame)
 
 fig = go.Figure(fig_dict)
-
 fig.show()
 
 
