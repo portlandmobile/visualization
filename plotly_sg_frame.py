@@ -9,63 +9,25 @@ data_source_file=sys.argv[1]
 if len(sys.argv) > 2:
     start_date = sys.argv[2]
 
+#Read the Lon, Lat of each state
 df = pd.read_csv('./us_state_lonlat.csv')
+#read the data set to be displayed on the map
 df_data = pd.read_csv(data_source_file)
 df.head()
-
-df['text'] = df['name'] # + df['data'].astype(str) #+ '<br>Population ' + (df['pop']/1e6).astype(str)+' million'
-
-#frame_data={}
-#Mask the entry based on the date that we want to see
 state_df=df
-'''df_data['date'] = pd.to_datetime(df_data['date']) 
-frame_data0=df_data[df_data['date']==start_date]
-state_df = state_df.set_index('name')
-frame_data0 =frame_data0.set_index('state')
-state_df['data']=frame_data0['cases']
-state_df=state_df.fillna(axis=1, value='0')
-'''
-
-'''state_df1=df
-df_data['date'] = pd.to_datetime(df_data['date']) 
-frame_data0=df_data[df_data['date']=='2020-03-20']
-state_df1 = state_df1.set_index('name')
-frame_data0 =frame_data0.set_index('state')
-state_df1['data']=frame_data0['cases']
-state_df1=state_df1.fillna(axis=1, value='0')
-#frame_data[1]=df_data
-'''
-
-#print state_df, state_df1
-
-
-mask=(df_data['date'] == start_date)
-df_data = df_data.loc[mask]
-
-
-df_data['date'] = pd.to_datetime(df_data['date']) 
-mask=(df_data['date'] == start_date)
-df_data = df_data.loc[mask]
-
 
 # Let's combine the data source into the  geolocation source
 # https://github.com/nytimes/covid-19-data/blob/master/us-states.csv
+df['text'] = df['name'] # + df['data'].astype(str)
 df = df.set_index('name')
 df_data =df_data.set_index('state')
-df['data']=df_data['cases']
-df=df.fillna(axis=1, value='0')
 
+#Turn this on if bubbles are displayed based on categories and size.
 #limits = [(0,2),(3,10),(11,20),(21,50),(50,3000)]
 limits = [(0,3000)]
 colors = ["royalblue","crimson","lightseagreen","orange","lightgrey"]
 cities = []
-scale = 10
-
-
-df['text']=df['text']+'\n'+df['data'].astype(str)
-
-#fig = go.Figure()
-
+scale = 10 #the scaled used to resize the bubble
 
 # make figure
 fig_dict = {
@@ -73,7 +35,6 @@ fig_dict = {
     "layout": {},
     "frames": []
 }
-
 for i in range(len(limits)):
     lim = limits[i]
     # Breaking the list which is based in the order by population. 
@@ -92,68 +53,22 @@ fig_dict = dict(
                           method="animate",
                           args=[None])])]
     ),
-
     data = [
         {'type': 'scattergeo', 
         'locationmode' : 'USA-states',
-        'lon' : df_sub['lon'],
-        'lat' : df_sub['lat'],
-        'text' : df_sub['text'],
-        'marker' : {
-            'size' : df_sub['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
-            'color' : colors[i],
-            'line_color' : 'rgb(40,40,40)',
-            'line_width': 0.5,
-            'sizemode' : 'area'
-            }
-        
-        
 		},
 #    'name' : '{0} - {1}'.format(lim[0],lim[1])
-
     ],
 
-    frames = [
-        # {'name' : '0', 'layout' : {},
-        #  'data': [
-        #      {'type': 'scattergeo', 
-        #       'locationmode' : 'USA-states',
-        #       'lon' : df_sub['lon'],
-        #       'lat' : df_sub['lat'],
-        #       'text' : df_sub['text'],
-        #       'marker' : {
-        #         'size' : state_df1['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
-        #         'color' : colors[i],
-        #         'line_color' : 'rgb(40,40,40)',
-        #         'line_width': 0.5,
-        #         'sizemode' : 'area'
-        #     }
-        #     }
-        #   ],
-        # }
-    ]
+    frames = []
 )
 
-df_data = pd.read_csv(data_source_file)
 state_df = state_df.set_index('name')
-#frame_data0 =frame_data0.set_index('state')
-df_data['date'] = pd.to_datetime(df_data['date']) 
-#df=df.set_index('name')
-
 data_source = pd.read_csv(data_source_file)
 
 count=0
 for i in pd.date_range(start_date, '2020-04-8', freq='1D'):
     count=count+1    
-#     mask=(df_data['date'] == i)
-#     temp_data = df_data.loc[mask]
-
-
-# #    frame_data0=df_data[temp_data['date']==i]
-# #    print frame_data0['cases']
-#     state_df['data']=temp_data['cases']
-#     state_df=state_df.fillna(axis=1, value='0')
-#     print state_df
 
     df_data2=data_source
     df_data2=df_data2.set_index('state')
@@ -165,18 +80,17 @@ for i in pd.date_range(start_date, '2020-04-8', freq='1D'):
     # https://github.com/nytimes/covid-19-data/blob/master/us-states.csv
     df['data']=df_data2['cases']
     df=df.fillna(axis=1, value='0')
-
-
+    
     appendFrame={'name' : count, 'layout' : {},
          'data': [
              {'type': 'scattergeo', 
               'locationmode' : 'USA-states',
-              'lon' : df_sub['lon'],
-              'lat' : df_sub['lat'],
-              'text' : df_sub['text'],
+              'lon' : df['lon'],
+              'lat' : df['lat'],
+              'text' : df['text'],
               'marker' : {
                 'size' : df['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
-                'color' : colors[0],
+                'color' : 'orange',
                 'line_color' : 'rgb(40,40,40)',
                 'line_width': 0.5,
                 'sizemode' : 'area'
