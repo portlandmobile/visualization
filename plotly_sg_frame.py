@@ -80,14 +80,14 @@ for i in pd.date_range(start_date, '2020-04-8', freq='1D'):
     # https://github.com/nytimes/covid-19-data/blob/master/us-states.csv
     df['data']=df_data2['cases']
     df=df.fillna(axis=1, value='0')
-    
-    appendFrame={'name' : count, 'layout' : {},
+    convertedDate = i.to_pydatetime()
+    appendFrame={'name' : count, 'layout' : {'title_text':".                      "+convertedDate.strftime('%Y-%m-%d')},
          'data': [
              {'type': 'scattergeo', 
               'locationmode' : 'USA-states',
-              'lon' : df['lon'],
-              'lat' : df['lat'],
-              'text' : df['text'],
+              'lon' : df['lon']-0.5,
+              'lat' : df['lat']-0.5,
+              'text' : df['text']+' ' +df['data'].astype(str),
               'marker' : {
                 'size' : df['data'].astype(int)/scale, #10,  #df_sub['pop']/scale,
                 'color' : 'orange',
@@ -102,6 +102,19 @@ for i in pd.date_range(start_date, '2020-04-8', freq='1D'):
     fig_dict["frames"].append(appendFrame)
 
 fig = go.Figure(fig_dict)
+
+fig.add_trace(go.Scattergeo(
+        lon = df['lon'],
+        lat = df['lat'],
+        text = df['code'],
+        mode = 'text',
+        textfont=dict(
+           family="sans serif",
+           color="crimson"
+        ),
+        showlegend = False,
+    ))
+
 fig.show()
 
 
