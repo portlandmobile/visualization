@@ -41,11 +41,11 @@ for i in range(len(limits)):
     df_sub = df[lim[0]:lim[1]]
 fig_dict = dict(
     layout = dict(
-        title_text = 'US States Blah Blah<br>(Click legend to toggle traces)',
+        title_text = '',
         showlegend = True,
         geo = dict(
             scope = 'usa',
-            landcolor = 'rgb(217, 217, 217)',
+            landcolor = 'lightblue',#'rgb(217, 217, 217)',
         ),
         updatemenus=[dict(
             type="buttons",
@@ -67,7 +67,7 @@ state_df = state_df.set_index('name')
 data_source = pd.read_csv(data_source_file)
 
 count=0
-for i in pd.date_range(start_date, '2020-04-8', freq='1D'):
+for i in pd.date_range(start_date, datetime.date.today()-datetime.timedelta(days=1), freq='1D'):
     count=count+1    
 
     df_data2=data_source
@@ -81,7 +81,7 @@ for i in pd.date_range(start_date, '2020-04-8', freq='1D'):
     df['data']=df_data2['cases']
     df=df.fillna(axis=1, value='0')
     convertedDate = i.to_pydatetime()
-    appendFrame={'name' : count, 'layout' : {'title_text':".                      "+convertedDate.strftime('%Y-%m-%d')},
+    appendFrame={'name' : count, 'layout' : {'title_text':convertedDate.strftime('%Y-%m-%d'), 'title_x':0.5},
          'data': [
              {'type': 'scattergeo', 
               'locationmode' : 'USA-states',
@@ -103,6 +103,20 @@ for i in pd.date_range(start_date, '2020-04-8', freq='1D'):
 
 fig = go.Figure(fig_dict)
 
+fig.update_layout(
+    title={
+        'y':0.9,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top',
+        'font':dict(
+            family="Courier New, monospace",
+            size=40,
+            color="#7f7f7f"
+    )      }
+        )
+
+#Make the date dynamically as the time serious
 fig.add_trace(go.Scattergeo(
         lon = df['lon'],
         lat = df['lat'],
@@ -110,10 +124,19 @@ fig.add_trace(go.Scattergeo(
         mode = 'text',
         textfont=dict(
            family="sans serif",
-           color="crimson"
+           color="white"
         ),
         showlegend = False,
     ))
+
+# fig=go.Figure()
+# animals=['giraffes', 'orangutans', 'monkeys']
+# fig.add_trace(go.Bar
+#                 (x=animals, 
+#                  y=[20, 14, 23]
+#                  )
+#                 )
+
 
 fig.show()
 
